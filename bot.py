@@ -1,11 +1,25 @@
 import os
 import cv2
 import numpy as np
+from flask import Flask
+import threading
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters
 
-BOT_TOKEN = os.environ.get('BOT_TOKEN', '')
+# ===== 保持 Railway 在线 =====
+flask_app = Flask(__name__)
 
+@flask_app.route('/')
+def health():
+    return 'Bot is running!'
+
+def run_flask():
+    flask_app.run(host='0.0.0.0', port=8080)
+
+threading.Thread(target=run_flask, daemon=True).start()
+# ============================
+
+BOT_TOKEN = os.environ.get('BOT_TOKEN', '')
 KNOWN_DIR = 'known_qrs'
 ref_features = {}
 
